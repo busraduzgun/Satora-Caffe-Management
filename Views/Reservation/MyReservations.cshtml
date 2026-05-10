@@ -1,0 +1,205 @@
+﻿@using SatoraCaffeRestaurantTracking.Models
+@model List<Reservation>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Rezervasyonlarım - Satora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Satora Anime Pastel Tema Renkleri */
+        :root {
+            --soft-sky-blue: #AEE3FF;
+            --mint-leaf-green: #B8E8C8;
+            --sun-pastel-yellow: #FFE8A3;
+            --peach-glow: #FFBFA9;
+            --cloud-gray: #F9FAFF; /* Biraz daha açık bir ton */
+            --header-gradient-start: #667eea; /* Mevcut header rengi */
+            --header-gradient-end: #764ba2;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--cloud-gray);
+        }
+
+        /* Header Alanı (Diğer sayfalarla uyumlu) */
+        .header-section {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: white;
+            padding: 50px 0;
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.2);
+        }
+
+        /* Rezervasyon Kartı Tasarımı */
+        .reservation-card {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .reservation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Tarih Kutusu (Pastel Mavi) */
+        .date-box {
+            background-color: var(--soft-sky-blue);
+            color: #fff;
+            padding: 15px 10px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 85px;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.3);
+        }
+        .date-day { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+        .date-month { font-size: 0.9rem; text-transform: uppercase; font-weight: 600; }
+
+        /* Durum Rozetleri (Pastel Renkler) */
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        /* Bekliyor - Pastel Sarı */
+        .status-wait { background-color: var(--sun-pastel-yellow); color: #7a6220; }
+        /* Onaylandı - Pastel Yeşil */
+        .status-ok { background-color: var(--mint-leaf-green); color: #2d5c3e; }
+        /* İptal - Pastel Şeftali/Kırmızı */
+        .status-cancel { background-color: var(--peach-glow); color: #7a3e2d; }
+
+        /* İptal Butonu */
+        .btn-cancel-custom {
+            border: 2px solid var(--peach-glow);
+            color: var(--peach-glow);
+            font-weight: 700;
+            border-radius: 30px;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .btn-cancel-custom:hover {
+            background-color: var(--peach-glow);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section text-center">
+        <h2 class="fw-bold mb-2"><i class="fas fa-calendar-alt me-2"></i>Rezervasyonlarım</h2>
+        <p class="mb-4 opacity-75" style="font-size: 1.1rem;">Geçmiş ve gelecek tüm masa talepleriniz.</p>
+        <a href="/Customer/Index" class="btn btn-light btn-sm rounded-pill px-4 py-2 fw-bold" style="color: var(--header-gradient-end)">
+            <i class="fas fa-arrow-left me-1"></i> Ana Sayfaya Dön
+        </a>
+    </div>
+
+    <div class="container pb-5">
+
+        @if (TempData["Mesaj"] != null)
+        {
+            <div class="alert alert-success rounded-4 text-center shadow-sm mb-4 border-0" style="background-color: var(--mint-leaf-green); color: #2d5c3e;">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Mesaj"]
+            </div>
+        }
+        
+        @if (TempData["Hata"] != null)
+        {
+             <div class="alert alert-danger rounded-4 text-center shadow-sm mb-4 border-0" style="background-color: var(--peach-glow); color: #7a3e2d;">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Hata"]
+            </div>
+        }
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="text-center mt-5 text-muted bg-white p-5 rounded-5 shadow-sm mx-auto" style="max-width: 600px;">
+                <i class="far fa-calendar-times fa-5x mb-4" style="color: var(--soft-sky-blue);"></i>
+                <h3 class="fw-bold">Henüz bir rezervasyonunuz yok.</h3>
+                <p>Satora'nın eşsiz atmosferinde yerinizi ayırtmak için hemen bir plan yapın!</p>
+                <a href="/Reservation/Create" class="btn btn-primary rounded-pill mt-3 px-5 py-3 fw-bold border-0"
+                   style="background: linear-gradient(to right, var(--header-gradient-start), var(--header-gradient-end));">
+                   <i class="fas fa-plus me-2"></i>Hemen Yer Ayırt
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="reservation-card p-4 h-100 d-flex flex-column justify-content-between">
+                            
+                            <div class="d-flex align-items-start">
+                                <div class="date-box me-3 shadow-sm">
+                                    <div class="date-day">@item.ReservationDate.Day</div>
+                                    <div class="date-month">@item.ReservationDate.ToString("MMM")</div>
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-2 text-dark">
+                                        <i class="fas fa-chair me-2" style="color: var(--header-gradient-end);"></i>
+                                        @(item.Table != null ? item.Table.Id : "Masa #" + item.TableId)
+                                    </h5>
+                                    
+                                    <div class="text-muted mb-1 d-flex align-items-center">
+                                        <i class="far fa-clock me-2 text-primary opacity-50"></i> 
+                                        <span class="fw-bold">@item.ReservationDate.ToString("HH:mm")</span>
+                                    </div>
+                                    <div class="text-muted d-flex align-items-center">
+                                        <i class="fas fa-user-friends me-2 text-primary opacity-50"></i>
+                                        <span>@item.GuestCount Kişi</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+                                
+                                <div>
+                                    @if (item.Status == 0) { <span class="status-badge status-wait"><i class="fas fa-hourglass-half me-1"></i>Bekliyor</span> }
+                                    else if (item.Status == 1) { <span class="status-badge status-ok"><i class="fas fa-check me-1"></i>Onaylandı</span> }
+                                    else { <span class="status-badge status-cancel"><i class="fas fa-times me-1"></i>İptal Edildi</span> }
+                                </div>
+
+                                @if (item.Status != 2 && item.ReservationDate > DateTime.Now)
+                                {
+                                    <a href="/Reservation/CancelReservation/@item.Id" 
+                                       class="btn btn-cancel-custom"
+                                       onclick="return confirm('Bu rezervasyonu iptal etmek istediğinize emin misiniz?');">
+                                       <i class="fas fa-times me-1"></i> İptal Et
+                                    </a>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <div class="mt-2 small text-muted fst-italic bg-light p-2 rounded-3">
+                                    <i class="fas fa-comment-dots me-1"></i> "@item.Description"
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</body>
+</html>

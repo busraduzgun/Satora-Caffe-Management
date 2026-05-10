@@ -1,0 +1,92 @@
+﻿@model SatoraCaffeRestaurantTracking.Models.Order
+
+@{
+    // TOPLAM HESAPLAMA (Eski usul, hatasız yöntem)
+    decimal total = 0;
+    string totalPriceStr = "0.00";
+
+    // "Any()" yerine "Count > 0" kullanıyoruz. Bu daha hızlıdır ve uyarı vermez.
+    if (Model != null && Model.OrderDetails != null && Model.OrderDetails.Count > 0)
+    {
+        foreach (var item in Model.OrderDetails)
+        {
+            total += (item.Quantity * item.UnitPrice);
+        }
+        totalPriceStr = total.ToString("N2");
+    }
+}
+
+<div class="order-header">
+    <h5 class="fw-bold m-0"><i class="fas fa-receipt me-2"></i>Adisyon</h5>
+    <small class="text-muted">Sipariş No: #@(Model != null ? Model.Id : 0)</small>
+</div>
+
+<div class="order-list">
+    @if (Model != null && Model.OrderDetails != null && Model.OrderDetails.Count > 0)
+    {
+        foreach (var detail in Model.OrderDetails)
+        {
+            <div class="order-item">
+                <div style="flex: 1;">
+                    <span class="fw-bold d-block">@detail.Product.ProductName</span>
+                    <div class="text-muted small">@detail.UnitPrice.ToString("N2") ₺</div>
+                </div>
+
+                <div class="d-flex align-items-center mx-3">
+                    <button class="btn btn-sm btn-outline-danger rounded-circle p-0"
+                            style="width: 25px; height: 25px;"
+                            onclick="decreaseQty(@detail.Id)">
+                        <i class="fas fa-minus" style="font-size: 10px;"></i>
+                    </button>
+
+                    <span class="mx-2 fw-bold">@detail.Quantity</span>
+
+                    <button class="btn btn-sm btn-outline-success rounded-circle p-0"
+                            style="width: 25px; height: 25px;"
+                            onclick="increaseQty(@detail.Id)">
+                        <i class="fas fa-plus" style="font-size: 10px;"></i>
+                    </button>
+                </div>
+
+                <div class="fw-bold text-primary" style="width: 60px; text-align: right;">
+                    @((detail.Quantity * detail.UnitPrice).ToString("N0")) ₺
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center text-muted mt-5">
+            <i class="fas fa-shopping-basket fa-3x mb-3 opacity-25"></i>
+            <p>Henüz sipariş eklenmedi.</p>
+        </div>
+    }
+</div>
+
+<div class="total-section">
+    <div class="d-flex justify-content-between mb-3">
+        <span class="h5 m-0">Toplam:</span>
+        <span class="h4 fw-bold text-dark m-0">@totalPriceStr ₺</span>
+    </div>
+
+    @if (Model != null)
+    {
+        @* SİPARİŞ VARSA: Tamamla ve Ödeme Butonları *@
+
+        <a href="/Operation/Index" class="btn btn-action btn-save mb-2 text-decoration-none d-flex align-items-center justify-content-center">
+            <i class="fas fa-check me-2"></i>Siparişi Tamamla & Çık
+        </a>
+
+        <button class="btn btn-action btn-pay" onclick="openPaymentModal(@(Model.Id), '@totalPriceStr')">
+            <i class="fas fa-credit-card me-2"></i>Ödeme Al
+        </button>
+    }
+    else
+    {
+        @* SİPARİŞ YOKSA: Sadece Geri Dön Butonu *@
+
+        <a href="/Operation/Index" class="btn btn-secondary w-100 text-decoration-none d-flex align-items-center justify-content-center">
+            <i class="fas fa-arrow-left me-2"></i>Masalara Dön
+        </a>
+    }
+</div>

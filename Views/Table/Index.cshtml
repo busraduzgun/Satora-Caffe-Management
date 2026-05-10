@@ -1,0 +1,174 @@
+﻿@using SatoraCaffeRestaurantTracking.Models
+@model List<RestaurantTable>
+
+@{
+    Layout = null;
+}
+
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Hata"]
+    </div>
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Masa Listesi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #E8E8EC;
+            font-family: 'Quicksand', sans-serif;
+            padding: 40px;
+        }
+
+        .table-card {
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            transition: 0.3s;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+            .table-card:hover {
+                transform: translateY(-5px);
+            }
+
+        /* DURUM KONTROLÜ (0: Boş/Yeşil, >0: Dolu/Kırmızı) */
+        .status-empty {
+            background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+        }
+
+        .status-full {
+            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+        }
+
+        .table-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .table-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .table-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .btn-add {
+            background-color: #75C8FF;
+            color: white;
+            border-radius: 50px;
+            font-weight: bold;
+            padding: 10px 25px;
+            border: none;
+        }
+
+        /* SİLME BUTONU (SAĞ ÜST) */
+        .btn-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            opacity: 0.7;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+            .btn-delete:hover {
+                opacity: 1;
+                color: #fff;
+                transform: scale(1.1);
+            }
+
+        /* --- YENİ EKLENEN: GÜNCELLEME BUTONU (SOL ÜST) --- */
+        .btn-edit {
+            position: absolute;
+            top: 15px;
+            left: 15px; /* Sol tarafa yasladık */
+            color: white;
+            opacity: 0.7;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+            .btn-edit:hover {
+                opacity: 1;
+                color: #fff;
+                transform: scale(1.1);
+            }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 style="color: #6B6E76;"><i class="fas fa-chair me-2"></i>Restoran Masaları</h2>
+            <a href="/Table/Create" class="btn btn-add shadow"><i class="fas fa-plus me-2"></i>Yeni Masa Ekle</a>
+        </div>
+
+        <div class="row">
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="table-card @(item.Status == 0 ? "status-empty" : "status-full")">
+
+                            <a href="/Table/Update/@item.Id" class="btn-edit" title="Masayı Düzenle">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <a href="/Table/Delete/@item.Id" class="btn-delete" onclick="return confirm('Silmek istiyor musun?');">
+                                <i class="fas fa-times"></i>
+                            </a>
+
+                            <div class="table-icon">
+                                <i class="fas fa-chair"></i>
+                            </div>
+
+                            <div class="table-name">MASA @item.Id</div>
+
+                            <div class="table-info">
+                                Kapasite: @item.Capacity Kişilik
+                            </div>
+
+                            <div class="mt-2 fw-bold">
+                                @(item.Status == 0 ? "BOŞ" : "DOLU")
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center text-muted mt-5">
+                    <h4>Henüz hiç masa eklenmemiş.</h4>
+                </div>
+            }
+        </div>
+
+        <a href="/Manager/Index" class="btn btn-outline-secondary rounded-pill mt-4">
+            <i class="fas fa-arrow-left me-2"></i> Yönetim Paneline Dön
+        </a>
+
+    </div>
+
+</body>
+</html>

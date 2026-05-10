@@ -1,0 +1,360 @@
+﻿@model SatoraCaffeRestaurantTracking.Models.OrderViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Sipariş - Masa @Model.Table.Id</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Quicksand', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SOL TARAFI (MENÜ) VE SAĞ TARAFI (ADİSYON) AYIRAN YAPI */
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- SOL PANEL: MENÜ --- */
+        .menu-panel {
+            flex: 3;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f0f4f8;
+        }
+
+        .category-btn {
+            background: white;
+            border: 2px solid #B8E8C8;
+            color: #555;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .category-btn:hover, .category-btn.active {
+                background: #B8E8C8;
+                color: white;
+            }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            cursor: pointer;
+            height: 100%;
+            border: 2px solid transparent;
+        }
+
+            .product-card:hover {
+                transform: translateY(-3px);
+                border-color: #AEE3FF;
+            }
+
+        .product-price {
+            color: #FFBFA9;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* --- SAĞ PANEL: ADİSYON --- */
+        .order-panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        }
+
+        .order-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .order-list {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .total-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 10px;
+            border: none;
+        }
+
+        .btn-pay {
+            background: #FFBFA9;
+            color: white;
+        }
+        /* Şeftali */
+        .btn-save {
+            background: #AEE3FF;
+            color: white;
+        }
+        /* Mavi */
+        .btn-back {
+            background: #e0e0e0;
+            color: #555;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        /* --- ÖDEME MODAL TASARIMI --- */
+        .modal-header-custom {
+            background-color: #FFBFA9; /* Şeftali Tonu */
+            color: white;
+            border-bottom: none;
+        }
+
+        .text-theme-primary {
+            color: #FFBFA9;
+        }
+
+        /* NAKİT BUTONU TASARIMI (Seçilince Yeşil) */
+        .btn-payment-cash {
+            border: 2px solid #B8E8C8;
+            color: #666;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .btn-check:checked + .btn-payment-cash {
+            background-color: #B8E8C8;
+            color: white;
+            border-color: #B8E8C8;
+            box-shadow: 0 5px 15px rgba(184, 232, 200, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* KART BUTONU TASARIMI (Seçilince Mavi) */
+        .btn-payment-card {
+            border: 2px solid #AEE3FF;
+            color: #666;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .btn-check:checked + .btn-payment-card {
+            background-color: #AEE3FF;
+            color: white;
+            border-color: #AEE3FF;
+            box-shadow: 0 5px 15px rgba(174, 227, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* ONAY BUTONU */
+        .btn-confirm-pay {
+            background-color: #FFBFA9;
+            color: white;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-confirm-pay:hover {
+                background-color: #ffaa8a;
+                transform: scale(1.02);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        <div class="menu-panel">
+
+            <div class="d-flex align-items-center mb-4">
+                <a href="/Operation/Index" class="btn btn-outline-secondary me-3 rounded-circle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-arrow-left"></i></a>
+                <h3 class="m-0 fw-bold">Masa @Model.Table.Id</h3>
+                <span class="badge bg-secondary ms-3">@Model.Table.Capacity Kişilik</span>
+            </div>
+
+            <div class="mb-4 d-flex flex-wrap">
+                <button class="category-btn active">Tümü</button>
+                @foreach (var cat in Model.Categories)
+                {
+                    <button class="category-btn">@cat.CategoryName</button>
+                }
+            </div>
+
+            <div class="row g-3">
+                @foreach (var prod in Model.Products)
+                {
+                    bool tukendi = prod.Stock <= 0;
+                    bool kritik = prod.Stock > 0 && prod.Stock < 20;
+
+                    string cardStyle = tukendi ? "opacity: 0.6; cursor: not-allowed; background-color: #f8f9fa;" : "cursor: pointer;";
+                    string clickEvent = tukendi ? "" : $"onclick=addToCart({prod.Id})"; // Stok yoksa tıklama fonksiyonunu iptal et
+
+                    string badgeClass = tukendi ? "bg-danger" : (kritik ? "bg-warning text-dark" : "bg-success");
+                    string badgeText = tukendi ? "TÜKENDİ" : (kritik ? $"Son {prod.Stock} Ürün" : $"{prod.Stock} Adet");
+
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="product-card position-relative" style="@cardStyle" @clickEvent>
+
+                            <span class="position-absolute top-0 end-0 m-2 badge @badgeClass shadow-sm" style="font-size: 0.8rem;">
+                                @badgeText
+                            </span>
+
+                            <div class="fw-bold mb-1 mt-3">@prod.ProductName</div>
+
+                            <div class="product-price">@prod.UnitPrice.ToString("N2") ₺</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="order-panel" id="order-panel-content">
+            <partial name="_OrderSummary" model="Model.CurrentOrder" />
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 25px; overflow: hidden;">
+
+                <div class="modal-header modal-header-custom p-4">
+                    <h5 class="modal-title fw-bold fs-4"><i class="fas fa-wallet me-2"></i>Ödeme Al</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form action="/Operation/CloseOrder" method="post">
+                    <div class="modal-body p-4 text-center bg-white">
+
+                        <input type="hidden" name="orderId" id="modalOrderId" />
+
+                        <h6 class="text-muted text-uppercase mb-2" style="letter-spacing: 1px; font-size: 0.8rem;">Toplam Tutar</h6>
+                        <h1 class="display-4 fw-bold text-theme-primary mb-4" id="modalTotalAmount">0.00 ₺</h1>
+
+                        <p class="mb-3 fw-bold text-dark">Ödeme Yöntemi Seçiniz:</p>
+
+                        <div class="d-flex justify-content-center gap-3 mb-4">
+                            <input type="radio" class="btn-check" name="paymentMethodId" id="method1" value="1" checked>
+                            <label class="btn btn-payment-cash px-4 py-3 rounded-4 w-100" for="method1">
+                                <i class="fas fa-money-bill-wave fa-2x d-block mb-2"></i>
+                                <span class="fw-bold">NAKİT</span>
+                            </label>
+
+                            <input type="radio" class="btn-check" name="paymentMethodId" id="method2" value="2">
+                            <label class="btn btn-payment-card px-4 py-3 rounded-4 w-100" for="method2">
+                                <i class="fas fa-credit-card fa-2x d-block mb-2"></i>
+                                <span class="fw-bold">KART</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer justify-content-center border-0 pb-4 bg-white">
+                        <button type="submit" class="btn btn-lg btn-confirm-pay rounded-pill px-5 fw-bold shadow-sm">
+                            ÖDEMEYİ ONAYLA <i class="fas fa-check-circle ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Global değişken tanımlıyoruz
+        var paymentModalObj;
+
+        function addToCart(productId) {
+            var tableId = parseInt(@Model.Table.Id);
+            $.ajax({
+                url: '/Operation/AddToOrder',
+                type: 'POST',
+                data: { tableId: tableId, productId: productId },
+                success: function (response) {
+                    $("#order-panel-content").html(response);
+                },
+                error: function () {
+                    alert("Hata oluştu!");
+                }
+            });
+        }
+
+        function increaseQty(detailId) {
+            $.ajax({
+                url: '/Operation/IncreaseQuantity',
+                type: 'POST',
+                data: { detailId: detailId },
+                success: function (response) {
+                    $("#order-panel-content").html(response);
+                }
+            });
+        }
+
+        function decreaseQty(detailId) {
+            $.ajax({
+                url: '/Operation/DecreaseQuantity',
+                type: 'POST',
+                data: { detailId: detailId },
+                success: function (response) {
+                    $("#order-panel-content").html(response);
+                }
+            });
+        }
+
+        function openPaymentModal(orderId, totalAmount) {
+            // Değerleri Modal'ın içine yaz
+            $("#modalOrderId").val(orderId);
+            $("#modalTotalAmount").text(totalAmount + " ₺");
+
+            // Modal elementini al
+            var modalEl = document.getElementById('paymentModal');
+
+            // Eğer modal daha önce oluşturulmamışsa oluştur, varsa var olanı kullan
+            if (!paymentModalObj) {
+                paymentModalObj = new bootstrap.Modal(modalEl);
+            }
+
+            paymentModalObj.show();
+        }
+    </script>
+</body>
+</html>

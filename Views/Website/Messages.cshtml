@@ -1,0 +1,131 @@
+﻿@model List<SatoraCaffeRestaurantTracking.Models.Messages>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Mesaj Yönetimi - Satora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --soft-sky-blue: #AEE3FF;
+            --clear-day-blue: #75C8FF;
+            --sun-pastel-yellow: #FFE8A3;
+            --peach-glow: #FFBFA9;
+            --mint-leaf-green: #B8E8C8;
+            --cloud-gray: #E8E8EC;
+            --soft-graphite: #6B6E76;
+            --lavender-mist: #DCD6F7;
+        }
+
+        body {
+            background-color: var(--cloud-gray);
+            font-family: 'Quicksand', sans-serif;
+            color: var(--soft-graphite);
+        }
+
+        .satora-card {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border-left: 8px solid var(--mint-leaf-green);
+        }
+
+        .btn-back {
+            background-color: var(--peach-glow);
+            color: white;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 8px 20px;
+        }
+
+        .reply-box {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px dashed var(--clear-day-blue);
+        }
+
+        .replied-badge {
+            background-color: var(--mint-leaf-green);
+            color: #444;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 style="color: var(--clear-day-blue); font-weight: 700;">💌 Mesaj Yönetimi</h2>
+            <a href="/Manager/Index" class="btn-back">< Admin Paneline Dön</a>
+        </div>
+
+        <div class="mb-4 d-flex gap-2 justify-content-center">
+            <a href="/Website/AboutSettings" class="btn btn-sm" style="background-color: var(--soft-sky-blue); color: #444; border-radius: 20px; font-weight: 700; padding: 5px 15px;">🌸 Hakkımızda</a>
+            <a href="/Website/ContactSettings" class="btn btn-sm" style="background-color: var(--sun-pastel-yellow); color: #444; border-radius: 20px; font-weight: 700; padding: 5px 15px;">📍 İletişim</a>
+            <a href="/Website/Messages" class="btn btn-sm" style="background-color: var(--mint-leaf-green); color: #444; border-radius: 20px; font-weight: 700; padding: 5px 15px;">💌 Mesajlar</a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="card satora-card p-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-7 border-end">
+                            <div class="d-flex justify-content-between">
+                                <strong style="color: var(--soft-graphite);">@item.SenderName</strong>
+                                <small class="text-muted">@item.SendDate.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                            <small class="text-info">@item.Email</small>
+                            <h6 class="fw-bold text-primary mt-2">@item.Subject</h6>
+                            <p class="mb-0 text-muted">@item.Content</p>
+
+                            <div class="mt-2 text-end">
+                                <a href="/Website/DeleteMessage/@item.Id" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Silmek istediğine emin misin?')">Sil</a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            @if (!string.IsNullOrEmpty(item.ReplyContent))
+                            {
+                                <div class="bg-light p-3 rounded h-100">
+                                    <span class="replied-badge">✓ Cevaplandı</span>
+                                    <small class="d-block text-muted mt-2">Senin cevabın (@item.ReplyDate?.ToString("dd.MM HH:mm")):</small>
+                                    <p class="mt-1 fst-italic">"@item.ReplyContent"</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-action="SaveReply" method="post" class="reply-box">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <label class="small fw-bold text-muted mb-1">Müşteriye Cevap Yaz:</label>
+                                    <textarea name="replyText" class="form-control mb-2" rows="3" placeholder="Merhabalar..." style="border-radius: 10px; font-size: 0.9rem;" required></textarea>
+                                    <button type="submit" class="btn btn-sm w-100 text-white fw-bold" style="background-color: var(--clear-day-blue); border-radius: 20px;">
+                                        <i class="fas fa-paper-plane"></i> Cevabı Kaydet
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-light text-center shadow-sm">Henüz mesaj yok.</div>
+        }
+    </div>
+</body>
+</html>

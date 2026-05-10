@@ -1,0 +1,263 @@
+﻿@using SatoraCaffeRestaurantTracking.Models
+@model List<Category>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menü - Satora Cafe</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --pastel-blue: #AEE3FF;
+            --pastel-pink: #FFBFA9;
+            --pastel-yellow: #FFE8A3;
+            --pastel-green: #B8E8C8;
+            --dark-text: #555;
+            --off-white: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--off-white);
+            color: var(--dark-text);
+        }
+
+        /* --- ÜST BANNER --- */
+        .menu-header {
+            background: linear-gradient(to right, var(--pastel-blue), var(--pastel-pink));
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .menu-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+        }
+
+        .btn-back {
+            background-color: white;
+            color: var(--dark-text);
+            border-radius: 30px;
+            padding: 8px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+            .btn-back:hover {
+                transform: scale(1.05);
+                background-color: var(--pastel-yellow);
+            }
+
+        /* --- KATEGORİ BAŞLIKLARI --- */
+        .category-title {
+            color: var(--pastel-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 3px dashed var(--pastel-yellow);
+            display: inline-block;
+            margin-bottom: 30px;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+
+        /* --- ÜRÜN KARTLARI --- */
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: none;
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* İçeriği alt alta hizala */
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 5px solid var(--pastel-blue);
+        }
+
+        .card-body {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .price-tag {
+            background-color: var(--pastel-yellow);
+            color: #555;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-block;
+        }
+
+        .sold-out {
+            background-color: #ddd;
+            color: #888;
+            text-decoration: line-through;
+        }
+
+        .stock-badge {
+            font-size: 0.8rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+        }
+
+
+        .btn-add-cart {
+            background-color: var(--pastel-green);
+            color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+            .btn-add-cart:hover {
+                background-color: #9bd6b0;
+                color: white;
+                transform: scale(1.02);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="menu-header">
+        <h1 class="menu-title">Lezzet Menüsü</h1>
+        <p class="fs-5 opacity-75">Taze, Doğal ve Sevgiyle Hazırlandı.</p>
+
+        <div>
+            <a href="/Customer/Index" class="btn-back me-2"><i class="fas fa-arrow-left me-2"></i>Ana Sayfa</a>
+
+            <a href="/Cart/Index" class="btn-back text-primary">
+                <i class="fas fa-shopping-basket me-2"></i>Sepetim
+            </a>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var category in Model)
+            {
+                @if (category.Products.Count > 0)
+                {
+                    <div class="text-center">
+                        <h2 class="category-title">@category.CategoryName</h2>
+                    </div>
+
+                    <div class="row mb-5">
+                        @foreach (var item in category.Products)
+                        {
+                            @if (item.Status == true)
+                            {
+                                <div class="col-md-3 mb-4">
+                                    <div class="product-card">
+
+                                        @if (!string.IsNullOrEmpty(item.Image))
+                                        {
+                                            <img src="@item.Image" class="product-img" alt="@item.ProductName">
+                                        }
+                                        else
+                                        {
+                                            <div class="product-img d-flex align-items-center justify-content-center bg-light">
+                                                <i class="fas fa-utensils fa-3x text-secondary opacity-25"></i>
+                                            </div>
+                                        }
+
+                                        <div class="card-body">
+                                            <div>
+                                                <h5 class="product-name">@item.ProductName</h5>
+
+                                                @if (item.Stock > 0)
+                                                {
+                                                    <div class="price-tag">@item.UnitPrice ₺</div>
+                                                    @if (item.Stock < 10)
+                                                    {
+                                                        <span class="stock-badge">Son @item.Stock Adet!</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="price-tag sold-out">Tükendi</div>
+                                                }
+                                            </div>
+
+                                            @if (item.Stock > 0)
+                                            {
+                                                <a href="/Cart/AddToCart/@item.Id" class="btn btn-warning btn-sm rounded-pill text-white fw-bold">
+                                                    <i class="fas fa-shopping-cart me-1"></i> Sepete Ekle
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-secondary w-100 mt-3 rounded-pill" disabled>Stok Yok</button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="text-center mt-5 text-muted">
+                <h3>Henüz menüye ürün eklenmemiş.</h3>
+                <p>Lütfen daha sonra tekrar deneyin.</p>
+            </div>
+        }
+
+    </div>
+
+</body>
+</html>

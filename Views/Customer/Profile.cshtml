@@ -1,0 +1,187 @@
+﻿@model SatoraCaffeRestaurantTracking.Models.Customer
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Profilim - Satora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Satora Tema Renkleri */
+        :root {
+            --pastel-blue: #AEE3FF;
+            --pastel-pink: #FFBFA9;
+            --pastel-yellow: #FFE8A3;
+            --pastel-green: #B8E8C8;
+            --cloud-gray: #F9FAFF;
+            --header-gradient-start: #667eea;
+            --header-gradient-end: #764ba2;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--cloud-gray);
+        }
+
+        /* Üst Header Alanı */
+        .header-section {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: white;
+            padding: 50px 0;
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.2);
+        }
+
+        /* Profil Kartı Tasarımı */
+        .profile-card {
+            background: white;
+            border-radius: 25px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Avatar Yuvarlağı */
+        .avatar-circle {
+            width: 90px;
+            height: 90px;
+            background-color: var(--pastel-yellow);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(255, 232, 163, 0.6);
+        }
+
+        /* Form Elemanları */
+        .form-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background-color: #f8f9fa;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 12px 20px;
+            transition: 0.3s;
+        }
+
+            .form-control:focus {
+                background-color: white;
+                border-color: var(--pastel-blue);
+                box-shadow: 0 0 10px rgba(174, 227, 255, 0.3);
+            }
+
+        /* Kaydet Butonu */
+        .btn-save {
+            background: linear-gradient(135deg, var(--pastel-blue) 0%, #75C8FF 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 40px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(117, 200, 255, 0.4);
+        }
+
+            .btn-save:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(117, 200, 255, 0.6);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="header-section text-center">
+        <h2 class="fw-bold"><i class="fas fa-user-cog me-2"></i>Profil Bilgilerim</h2>
+        <p class="mb-4 opacity-75" style="font-size: 1.1rem;">Kişisel bilgilerinizi ve şifrenizi güncelleyin.</p>
+        <a href="/Customer/Index" class="btn btn-light btn-sm rounded-pill px-4 py-2 fw-bold" style="color: var(--header-gradient-end)">
+            <i class="fas fa-arrow-left me-1"></i> Ana Sayfaya Dön
+        </a>
+    </div>
+
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+
+                @if (TempData["Mesaj"] != null)
+                {
+                    <div class="alert alert-success rounded-4 text-center shadow-sm mb-4 border-0" style="background-color: var(--pastel-green); color: #2d5c3e;">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["Mesaj"]
+                    </div>
+                }
+
+                <div class="profile-card">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <h4 class="text-center fw-bold mb-4">Merhaba, @Model.Name!</h4>
+
+                    <form action="/Customer/ProfileUpdate" method="post">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Adınız</label>
+                                <input type="text" name="Name" value="@Model.Name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Soyadınız</label>
+                                <input type="text" name="Surname" value="@Model.Surname" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-phone me-1"></i> Telefon Numarası</label>
+                            <input type="text" name="Telephone" value="@Model.Telephone" class="form-control" placeholder="05XX...">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-envelope me-1"></i> E-Posta Adresi</label>
+                            <input type="email" name="Email" value="@Model.Email" class="form-control" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i> Adresiniz</label>
+                            <textarea name="Address" class="form-control" rows="3" placeholder="Adres bilgilerinizi buraya girebilirsiniz...">@Model.Address</textarea>
+                        </div>
+
+                        <div class="mb-4 p-4 rounded-4" style="background-color: #fff5f2; border: 1px dashed var(--pastel-pink);">
+                            <label class="form-label" style="color: #d66a4f;">
+                                <i class="fas fa-lock me-1"></i> Şifre Değiştir
+                            </label>
+                            <input type="password" name="newPassword" class="form-control" placeholder="Yeni şifre (Değiştirmek istemiyorsanız boş bırakın)">
+                            <small class="text-muted d-block mt-2" style="font-size: 0.8rem;">
+                                <i class="fas fa-info-circle me-1"></i> Güvenliğiniz için şifrenizi kimseyle paylaşmayın.
+                            </small>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-save w-100">
+                                <i class="fas fa-check me-2"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

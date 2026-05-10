@@ -1,0 +1,167 @@
+﻿@using SatoraCaffeRestaurantTracking.Models
+@model List<Messages> 
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Mesajlarım - Satora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Satora Tema Renkleri */
+        :root {
+            --pastel-blue: #AEE3FF;
+            --pastel-pink: #FFBFA9; /* Müşteri Rengi */
+            --pastel-yellow: #FFE8A3;
+            --pastel-green: #B8E8C8; /* Admin Rengi */
+            --cloud-gray: #F9FAFF;
+            --header-gradient-start: #667eea;
+            --header-gradient-end: #764ba2;
+        }
+
+        body { font-family: 'Quicksand', sans-serif; background-color: var(--cloud-gray); }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: white;
+            padding: 40px 0;
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.2);
+        }
+
+        /* Mesaj Kartı */
+        .message-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: white;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            padding: 15px 25px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Konuşma Balonları */
+        .chat-box { padding: 25px; }
+
+        .msg-bubble {
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+            max-width: 80%;
+            margin-bottom: 20px;
+        }
+
+        /* Müşteri Mesajı (Sağa Yaslı - Pembe) */
+        .msg-customer {
+            background-color: #FFF0EB; /* Çok açık pastel pembe */
+            border-top-right-radius: 0;
+            margin-left: auto; /* Sağa iter */
+            border-left: 5px solid var(--pastel-pink);
+        }
+
+        /* Admin Cevabı (Sola Yaslı - Yeşil) */
+        .msg-admin {
+            background-color: #F0FFF4; /* Çok açık pastel yeşil */
+            border-top-left-radius: 0;
+            margin-right: auto; /* Sola iter */
+            border-left: 5px solid var(--pastel-green);
+        }
+
+        .sender-name { font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; display: block; }
+        .msg-date { font-size: 0.75rem; opacity: 0.6; float: right; margin-top: 5px; }
+        
+        .badge-pending { background-color: var(--pastel-yellow); color: #856404; }
+        .badge-replied { background-color: var(--pastel-green); color: #0f5132; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-section text-center">
+        <h2 class="fw-bold"><i class="fas fa-envelope-open-text me-2"></i>Mesajlarım</h2>
+        <p class="mb-3 opacity-75">Bize gönderdiğiniz mesajlar ve yanıtlarımız.</p>
+        <a href="/Customer/Index" class="btn btn-light btn-sm rounded-pill px-4 fw-bold" style="color: var(--header-gradient-end)">
+            <i class="fas fa-arrow-left me-1"></i> Ana Sayfaya Dön
+        </a>
+    </div>
+
+    <div class="container pb-5">
+        
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="text-center mt-5 text-muted">
+                <i class="far fa-paper-plane fa-4x mb-3" style="color: var(--pastel-blue);"></i>
+                <h4>Henüz bir mesajınız yok.</h4>
+                <p>Bizimle iletişime geçmek için ana sayfadaki formu kullanabilirsiniz.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <div class="message-card">
+                    <div class="card-header-custom">
+                        <h5 class="fw-bold mb-0 text-dark">
+                            <span class="text-muted fs-6 me-2">Konu:</span> @item.Subject
+                        </h5>
+                        
+                        @* MODEL DEĞİŞİKLİĞİ BURADA: ReplyContent *@
+                        @if (!string.IsNullOrEmpty(item.ReplyContent))
+                        {
+                            <span class="badge badge-replied rounded-pill px-3">Yanıtlandı</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-pending rounded-pill px-3">Yanıt Bekliyor</span>
+                        }
+                    </div>
+
+                    <div class="chat-box">
+                        
+                        <div class="msg-bubble msg-customer">
+                            <span class="sender-name text-danger"><i class="fas fa-user me-1"></i> Siz</span>
+                            <p class="mb-0 text-dark">@item.Content</p>
+                            <small class="msg-date">@item.SendDate.ToString("dd MMM HH:mm")</small>
+                        </div>
+
+                        @* MODEL DEĞİŞİKLİĞİ BURADA: ReplyContent *@
+                        @if (!string.IsNullOrEmpty(item.ReplyContent))
+                        {
+                            <div class="msg-bubble msg-admin">
+                                <span class="sender-name text-success"><i class="fas fa-headset me-1"></i> Satora Destek Ekibi</span>
+                                <p class="mb-0 text-dark">@item.ReplyContent</p>
+                                @if(item.ReplyDate != null) { <small class="msg-date">@(((DateTime)item.ReplyDate).ToString("dd MMM HH:mm"))</small> }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted fst-italic small mt-3">
+                                <i class="fas fa-hourglass-half me-1"></i> Yetkililerimiz en kısa sürede dönüş yapacaktır...
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+</body>
+</html>

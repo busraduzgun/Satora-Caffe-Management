@@ -1,0 +1,299 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Satora Yönetim Paneli</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- SATORA ANIME PASTEL PALET --- */
+        :root {
+            /* Görselden alınan renkler */
+            --soft-sky-blue: #AEE3FF;
+            --clear-day-blue: #75C8FF;
+            --sun-pastel-yellow: #FFE8A3;
+            --peach-glow: #FFBFA9;
+            --mint-leaf-green: #B8E8C8;
+            --soft-sage: #90C8A2;
+            --cloud-gray: #E8E8EC; /* Arka plan rengi */
+            --soft-graphite: #6B6E76; /* Yazı rengi */
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--cloud-gray);
+            color: var(--soft-graphite);
+            font-family: 'Quicksand', sans-serif; /* Yumuşak, oval font */
+        }
+
+        /* Navbar Tasarımı */
+        .navbar-custom {
+            background-color: var(--white);
+            box-shadow: 0 4px 15px rgba(117, 200, 255, 0.2); /* Hafif mavi gölge */
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--clear-day-blue) !important;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* Kart Tasarımı (Genel) */
+        .card-custom {
+            background-color: var(--white);
+            border: none;
+            border-radius: 25px; /* Daha yuvarlak köşeler */
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            height: 100%;
+        }
+
+            .card-custom:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(117, 200, 255, 0.3);
+            }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-top: 15px;
+            color: var(--soft-graphite);
+        }
+
+        .icon-box {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* --- RENK TEMALARI (Her kart için ayrı renk) --- */
+
+        /* 1. Kategoriler (Peach) */
+        .theme-peach .icon-box {
+            color: var(--peach-glow);
+        }
+
+        .theme-peach .btn-custom {
+            background-color: var(--peach-glow);
+            color: white;
+        }
+
+        .theme-peach:hover {
+            border-bottom: 5px solid var(--peach-glow);
+        }
+
+        /* 2. Ürünler (Clear Blue) */
+        .theme-blue .icon-box {
+            color: var(--clear-day-blue);
+        }
+
+        .theme-blue .btn-custom {
+            background-color: var(--clear-day-blue);
+            color: white;
+        }
+
+        .theme-blue:hover {
+            border-bottom: 5px solid var(--clear-day-blue);
+        }
+
+        /* 3. Masalar (Sun Yellow) */
+        .theme-yellow .icon-box {
+            color: #FDD835; /* Sarı ikon biraz daha koyu olsun ki görünsün */
+        }
+
+        .theme-yellow .btn-custom {
+            background-color: var(--sun-pastel-yellow);
+            color: var(--soft-graphite);
+        }
+
+        .theme-yellow:hover {
+            border-bottom: 5px solid var(--sun-pastel-yellow);
+        }
+
+        /* 4. Personel (Mint Green) */
+        .theme-mint .icon-box {
+            color: var(--soft-sage);
+        }
+
+        .theme-mint .btn-custom {
+            background-color: var(--mint-leaf-green);
+            color: var(--soft-graphite);
+        }
+
+        .theme-mint:hover {
+            border-bottom: 5px solid var(--mint-leaf-green);
+        }
+
+        /* 5. Raporlar (Sky Blue) */
+        .theme-sky .icon-box {
+            color: var(--soft-sky-blue);
+        }
+
+        .theme-sky .btn-custom {
+            background-color: var(--soft-sky-blue);
+            color: white;
+        }
+
+        .theme-sky:hover {
+            border-bottom: 5px solid var(--soft-sky-blue);
+        }
+
+        /* 6. Web Sitesi (Soft Graphite) */
+        .theme-dark .icon-box {
+            color: var(--soft-graphite);
+        }
+
+        .theme-dark .btn-custom {
+            background-color: var(--soft-graphite);
+            color: white;
+        }
+
+        .theme-dark:hover {
+            border-bottom: 5px solid var(--soft-graphite);
+        }
+
+
+        /* Buton Genel Ayarı */
+        .btn-custom {
+            border: none;
+            border-radius: 50px; /* Hap şeklinde butonlar */
+            padding: 10px 30px;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+            .btn-custom:hover {
+                opacity: 0.9;
+                transform: scale(1.05);
+            }
+
+        /* Hoşgeldin Kutusu */
+        .welcome-box {
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 2px dashed var(--clear-day-blue); /* Dikiş efekti */
+            color: var(--soft-graphite);
+            margin-bottom: 40px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-coffee" style="color: var(--peach-glow);"></i> Satora Cafe
+            </a>
+            <div class="d-flex">
+                <a href="/Login/Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+
+        <div class="welcome-box shadow-sm">
+            <h2 style="color: var(--clear-day-blue);">🌸 Hoşgeldin!</h2>
+            <p class="mb-0 text-muted">Bugün hava çok güzel, restoranın yönetimi tamamen senin parmaklarının ucunda.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card card-custom theme-peach text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h5 class="card-title">Kategoriler</h5>
+                        <p class="text-muted small">Menü başlıklarını düzenle.</p>
+                        <a href="/Category/Index" class="btn btn-custom">Yönet</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom theme-blue text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h5 class="card-title">Ürünler</h5>
+                        <p class="text-muted small">Yemek ve içecekleri ekle.</p>
+                        <a href="/Product/Index" class="btn btn-custom">Yönet</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom theme-yellow text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <h5 class="card-title">Masalar</h5>
+                        <p class="text-muted small">Masa düzenini kontrol et.</p>
+                        <a href="/Table/Index" class="btn btn-custom">Yönet</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom theme-mint text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Personeller</h5>
+                        <p class="text-muted small">Çalışan bilgilerini gör.</p>
+                        <a href="/Staff/Index" class="btn btn-custom">Yönet</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom theme-sky text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h5 class="card-title">Raporlar</h5>
+                        <p class="text-muted small">Satış analizlerini incele.</p>
+                        <a href="/Dashboard/Index" class="btn btn-custom">İncele</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom theme-dark text-center">
+                    <div class="card-body">
+                        <div class="icon-box">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h5 class="card-title">Web Sitesi Ayarları</h5>
+                        <p class="text-muted small">Mesajlar, Hakkımızda ve İletişim.</p>
+                        <a href="/Website/AboutSettings" class="btn btn-custom">Yönet</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

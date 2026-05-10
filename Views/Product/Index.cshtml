@@ -1,0 +1,191 @@
+﻿@using SatoraCaffeRestaurantTracking.Models
+@model List<Product>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Ürün Listesi - Satora</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- SATORA ANIME PASTEL PALETTE --- */
+        :root {
+            --bg-color: #E8E8EC;
+            --text-color: #6B6E76;
+            --card-bg: #ffffff;
+            --header-blue: #75C8FF;
+            --table-head: #AEE3FF;
+            /* Buton Renkleri */
+            --btn-add: #B8E8C8; /* Nane Yeşili */
+            --btn-edit: #FFE8A3; /* Pastel Sarı */
+            --btn-delete: #FFBFA9; /* Pastel Şeftali/Kırmızı */
+
+            --stock-low: #FFBFA9;
+            --stock-good: #90C8A2;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            background-color: var(--card-bg);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background-color: var(--header-blue);
+            color: white;
+            padding: 20px;
+        }
+
+        .table-custom thead {
+            background-color: var(--table-head);
+        }
+
+        .table-custom th {
+            padding: 15px;
+            border: none;
+            color: #555;
+        }
+
+        .table-custom td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        /* BUTON TASARIMLARI */
+        .btn-pastel {
+            border-radius: 50px;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-right: 5px;
+        }
+
+            .btn-pastel:hover {
+                transform: translateY(-2px);
+                opacity: 0.9;
+            }
+
+        .btn-add {
+            background-color: var(--btn-add);
+            color: #444;
+        }
+
+        /* GÜNCELLEME BUTONU (Sarı Kalem) */
+        .btn-edit {
+            background-color: var(--btn-edit);
+            color: #5c5236; /* İkon rengini koyu yaptım ki görünsün */
+        }
+
+        /* SİLME BUTONU (Kırmızı Çöp Kutusu) */
+        .btn-delete {
+            background-color: var(--btn-delete);
+            color: #6e3d3d;
+        }
+
+        .badge-cat {
+            background-color: var(--table-head);
+            color: #444;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="p-5">
+    <div class="container">
+        <div class="card card-custom">
+
+            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-utensils me-2"></i>Ürün Listesi</h3>
+                <a href="/Product/Create" class="btn btn-pastel btn-add shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Yeni Ekle
+                </a>
+            </div>
+
+            <div class="card-body p-4">
+                <table class="table table-hover table-custom">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>Ürün Adı</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>Kategori</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td class="fw-bold">@item.ProductName</td>
+
+                                    <td>@item.UnitPrice.ToString("N2") ₺</td>
+
+                                    <td>
+                                        @if (item.Stock < 20)
+                                        {
+                                            <span style="color: var(--stock-low); font-weight:bold;">@item.Stock (Az)</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: var(--stock-good); font-weight:bold;">@item.Stock</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (item.Category != null)
+                                        {
+                                            <span class="badge-cat">@item.Category.CategoryName</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span>-</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <a href="/Product/Update/@item.Id" class="btn btn-sm btn-pastel btn-edit" title="Güncelle">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+
+                                        <a href="/Product/Delete/@item.Id" class="btn btn-sm btn-pastel btn-delete" onclick="return confirm('Silmek istiyor musun?');" title="Sil">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center py-4">Henüz ürün yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+                <a href="/Manager/Index" class="btn btn-outline-secondary mt-3">🔙 Panele Dön</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

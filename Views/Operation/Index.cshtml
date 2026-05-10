@@ -1,0 +1,209 @@
+﻿@model List<SatoraCaffeRestaurantTracking.Models.RestaurantTable>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Satora Operasyon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* GENEL AYARLAR */
+        body {
+            background-color: #f0f4f8; /* Çok açık gri-mavi */
+            font-family: 'Quicksand', sans-serif;
+            color: #6B6E76; /* Soft Graphite - Yumuşak Siyah */
+        }
+
+        /* ÜST BAR (HEADER) */
+        .top-bar {
+            background: linear-gradient(135deg, #75C8FF 0%, #AEE3FF 100%); /* Clear Day Blue -> Soft Sky Blue */
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(117, 200, 255, 0.3);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .brand-title {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* MASA KARTLARI */
+        .table-card {
+            background: white;
+            border-radius: 25px; /* İyice yuvarlak */
+            text-align: center;
+            padding: 25px 15px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Yaylanma efekti */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .table-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            }
+
+        /* --- BOŞ MASA (MINT GREEN TEMASI) --- */
+        .status-empty {
+            border-color: #B8E8C8; /* Mint Leaf Green */
+        }
+
+            .status-empty .icon-circle {
+                background-color: #B8E8C8;
+                color: white;
+                box-shadow: 0 5px 15px rgba(184, 232, 200, 0.6);
+            }
+
+            .status-empty .status-badge {
+                background-color: #e8f5e9;
+                color: #2e7d32;
+            }
+
+        /* --- DOLU MASA (PEACH GLOW TEMASI) --- */
+        .status-full {
+            border-color: #FFBFA9; /* Peach Glow */
+            background-color: #fffbf9;
+        }
+
+            .status-full .icon-circle {
+                background-color: #FFBFA9;
+                color: white;
+                box-shadow: 0 5px 15px rgba(255, 191, 169, 0.6);
+            }
+
+            .status-full .status-badge {
+                background-color: #fff0eb;
+                color: #d84315;
+            }
+
+        /* ORTAK KART ÖZELLİKLERİ */
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 15px;
+            transition: 0.3s;
+        }
+
+        .table-no {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Buton Stili */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            border-radius: 15px;
+            padding: 5px 15px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .btn-glass:hover {
+                background: rgba(255, 255, 255, 0.4);
+                color: white;
+            }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="d-flex align-items-center">
+            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width:40px; height:40px; font-weight:bold;">S</div>
+            <h5 class="brand-title m-0">Satora Operasyon</h5>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <span class="me-3 text-white fw-bold d-none d-md-block" style="font-size: 0.9rem;">
+                <i class="fas fa-user-circle me-1"></i> Personel Paneli
+            </span>
+            <a href="/Login/LogOut" class="btn btn-glass btn-sm">
+                <i class="fas fa-sign-out-alt me-1"></i> Çıkış
+            </a>
+            <a href="/Delivery/Index" class="btn btn-warning text-dark fw-bold rounded-pill me-2 shadow-sm">
+                <i class="fas fa-motorcycle me-2"></i>Paket Servis
+            </a>
+        </div>
+    </div>
+
+    <div class="container py-5">
+
+        <div class="d-flex justify-content-center mb-5 gap-4">
+            <div class="d-flex align-items-center">
+                <span style="width:15px; height:15px; background:#B8E8C8; border-radius:50%; display:inline-block; margin-right:8px;"></span>
+                <span class="fw-bold text-muted">Boş Masa</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span style="width:15px; height:15px; background:#FFBFA9; border-radius:50%; display:inline-block; margin-right:8px;"></span>
+                <span class="fw-bold text-muted">Dolu Masa</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                // Status 1=Dolu, 0=Boş
+                bool isFull = (item.Status == 1);
+
+                string statusClass = isFull ? "status-full" : "status-empty";
+                string icon = isFull ? "fa-utensils" : "fa-chair"; // Doluysa çatal-bıçak, boşsa sandalye
+                string text = isFull ? "DOLU" : "MÜSAİT";
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/Operation/TableDetail/@item.Id" class="table-card @statusClass">
+
+                        <div class="icon-circle">
+                            <i class="fas @icon"></i>
+                        </div>
+
+                        <div class="table-no">Masa @item.Id</div>
+                        <div class="text-muted small mb-2 fw-bold">@item.Capacity Kişilik</div>
+
+                        <span class="status-badge">@text</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+</body>
+</html>

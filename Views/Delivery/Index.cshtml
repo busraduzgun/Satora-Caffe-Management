@@ -1,0 +1,247 @@
+﻿@model List<SatoraCaffeRestaurantTracking.Models.DeliveryOrder>
+
+@{
+    Layout = null; /* Standart menüleri (Home, Privacy) iptal eder */
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paket Servis Takibi - Satora</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* --- SATORA TEMASI RENKLERİ --- */
+
+        /* HAZIRLANIYOR DURUMU (Şeftali Tonları) */
+        .card-preparing {
+            border: 2px solid #FFBFA9;
+            background-color: white;
+        }
+
+        .badge-preparing {
+            background-color: #FFBFA9;
+            color: white;
+        }
+
+        .btn-preparing {
+            background-color: #FFBFA9;
+            color: white;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-preparing:hover {
+                background-color: #ffaa8a;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        /* YOLA ÇIKTI DURUMU (Mavi/Mint Tonları) */
+        .card-ontheway {
+            border: 2px solid #AEE3FF;
+            background-color: white;
+        }
+
+        .badge-ontheway {
+            background-color: #AEE3FF;
+            color: white;
+        }
+
+        /* GENEL KART TASARIMI */
+        .delivery-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+            .delivery-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            }
+
+        .header-section {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .btn-back {
+            border: 2px solid #e0e0e0;
+            color: #666;
+            border-radius: 50px;
+            padding: 8px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .btn-back:hover {
+                background-color: #e0e0e0;
+                color: #333;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="header-section d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: linear-gradient(45deg, #FFBFA9, #AEE3FF);">
+                <i class="fas fa-motorcycle fa-lg"></i>
+            </div>
+            <div>
+                <h4 class="mb-0 fw-bold" style="color: #555;">Paket Servis</h4>
+                <small class="text-muted">Aktif Sipariş Takibi</small>
+            </div>
+        </div>
+
+        <a href="/Operation/Index" class="btn-back">
+            <i class="fas fa-arrow-left me-2"></i>Masalara Dön
+        </a>
+    </div>
+
+    <div class="container pb-5">
+
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <div class="bg-white p-5 rounded-4 shadow-sm d-inline-block">
+                    <i class="fas fa-check-circle fa-4x mb-3" style="color: #B8E8C8;"></i>
+                    <h3 class="fw-bold text-muted">Aktif Paket Yok</h3>
+                    <p class="text-muted mb-0">Tüm siparişler teslim edildi, yeni sipariş bekleniyor.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    decimal total = item.Order.OrderDetails.Sum(x => x.Quantity * x.UnitPrice);
+
+                    // Duruma göre stil ve metin ayarları
+                    bool isPreparing = item.Status == 1;
+
+                    string cardClass = isPreparing ? "card-preparing" : "card-ontheway";
+                    string badgeClass = isPreparing ? "badge-preparing" : "badge-ontheway";
+
+                    string statusText = isPreparing ? "Hazırlanıyor" : "Yola Çıktı";
+                    string icon = isPreparing ? "fa-fire" : "fa-motorcycle";
+
+                    // Ödeme Yöntemi Belirleme (Görsel Gösterim İçin)
+                    string paymentMethodText = "Kapıda Ödeme";
+                    string paymentIcon = "fa-wallet";
+                    string paymentStyle = "background-color: #fff3cd; color: #856404;"; // Sarı (Belirsiz)
+
+                    if (item.PaymentMethodId == 1)
+                    {
+                        paymentMethodText = "Nakit Ödeme";
+                        paymentIcon = "fa-money-bill-wave";
+                        paymentStyle = "background-color: #d1e7dd; color: #0f5132;"; // Yeşil (Net)
+                    }
+                    if (item.PaymentMethodId == 2)
+                    {
+                        paymentMethodText = "Kartla Ödeme";
+                        paymentIcon = "fa-credit-card";
+                        paymentStyle = "background-color: #cff4fc; color: #055160;"; // Mavi (Net)
+                    }
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card delivery-card h-100 @cardClass">
+
+                            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-3 px-4">
+                                <span class="badge @badgeClass px-3 py-2 rounded-pill fs-6 fw-normal shadow-sm">
+                                    <i class="fas @icon me-2"></i>@statusText
+                                </span>
+                                <span class="fw-bold text-muted">#@item.OrderId</span>
+                            </div>
+
+                            <div class="card-body px-4 pb-4">
+                                <h4 class="card-title fw-bold mb-1" style="color: #444;">
+                                    @item.Order.Customer?.Name @item.Order.Customer?.Surname
+                                </h4>
+
+                                <div class="mb-2 d-flex align-items-start mt-3">
+                                    <i class="fas fa-map-marker-alt mt-1 me-3 text-danger"></i>
+                                    <span class="text-secondary fw-bold">@item.Order.Customer?.Address</span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <i class="fas fa-phone me-3 text-success"></i>
+                                    <span class="text-secondary">@item.Order.Customer?.Telephone</span>
+                                </div>
+
+                                <div class="mb-3 d-flex align-items-center p-2 rounded-3 small" style="@paymentStyle">
+                                    <i class="fas @paymentIcon me-2"></i>
+                                    <span class="fw-bold">@paymentMethodText</span>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(item.Note))
+                                {
+                                    <div class="alert alert-light border-0 p-3 rounded-3 mb-3 small text-muted" style="background-color: #f8f9fa;">
+                                        <i class="fas fa-sticky-note me-2 text-warning"></i>
+                                        <span class="fst-italic">@item.Note</span>
+                                    </div>
+                                }
+
+                                <hr class="my-4" style="border-color: #eee;">
+
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <div>
+                                        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Toplam Tutar</small>
+                                        <div class="fs-3 fw-bold" style="color: #555;">@total.ToString("N2") ₺</div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        @if (item.Status == 1)
+                                        {
+                                            <form action="/Delivery/SetOnTheWay" method="post">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-preparing rounded-pill px-4 py-2 fw-bold shadow-sm">
+                                                    Yola Çıkar <i class="fas fa-arrow-right ms-2"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (item.Status == 2)
+                                        {
+                                            <form action="/Delivery/SetDelivered" method="post">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <input type="hidden" name="methodId" value="1" /> <button type="submit" class="btn btn-success rounded-pill py-2 px-3 fw-bold shadow-sm" title="Nakit Teslim">
+                                                    <i class="fas fa-money-bill-wave"></i> Nakit
+                                                </button>
+                                            </form>
+
+                                            <form action="/Delivery/SetDelivered" method="post">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <input type="hidden" name="methodId" value="2" /> <button type="submit" class="btn btn-info text-white rounded-pill py-2 px-3 fw-bold shadow-sm" title="Kartla Teslim">
+                                                    <i class="fas fa-credit-card"></i> Kart
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
