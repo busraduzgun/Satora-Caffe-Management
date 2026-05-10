@@ -60,9 +60,6 @@ Owner:owner@satora.com			password:123
 6. DEVELOPER INFORMATION
 Name and Surname: [BÜŞRA DÜZGÜN]
 
-Student Number: [220709101]
-
-Submission Date: 28.12.2025
 
 
 
